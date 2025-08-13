@@ -47,8 +47,16 @@ import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, InfoCircleIc
 import { RouterLink } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 const user = useCookie('user');
-const ten_dang_nhap = ref(user.value.ten_dang_nhap);
-const email = ref(user.value.email);
+const ten_dang_nhap = ref(null);
+const email = ref(null);
+
+if (user.value) {
+  ten_dang_nhap.value = user.value.ten_dang_nhap || null;
+  email.value = user.value.email || null;
+} else {
+  ten_dang_nhap.value = null;
+  email.value = null;
+}
 
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null)

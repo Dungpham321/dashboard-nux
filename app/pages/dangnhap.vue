@@ -175,15 +175,23 @@
     </FullScreenLayout>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+definePageMeta({
+    layout: false,
+    middleware: ['auth']
+});
+import { ref, onMounted } from 'vue'
 import { login } from '@/composables/GlobalService'
 import CommonGridShape from '@/components/common/CommonGridShape.vue'
 import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useCookie } from '#app';
+import { useToast } from '@/composables/GlobalService'
+import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
+
 const ten_dang_nhap = ref('')
 const mat_khau = ref('')
-const showPassword = ref(false)
-const keepLoggedIn = ref(false)
+const showPassword = ref(false);
+const keepLoggedIn = ref(false);
+const { showToast } = useToast();
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value
 }
@@ -198,8 +206,9 @@ const handleSubmit = async () => {
         // const encryptedToken = CryptoJS.AES.encrypt(loginData.Accesstoken, secretKey).toString();
         const token = useCookie('token');
         const user = useCookie('user');
-        user.value = JSON.stringify({ten_dang_nhap: loginData.ten_dang_nhap, email: loginData.email}); 
+        user.value = JSON.stringify({ ten_dang_nhap: loginData.ten_dang_nhap, email: loginData.email });
         token.value = loginData.Accesstoken;
+        showToast(ThongBao.login, TypeToast.Success);
         navigateTo('/');
     }
 

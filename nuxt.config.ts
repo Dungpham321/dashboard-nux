@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   css: [
     "~/assets/css/main.css",
+    // "devextreme/dist/css/dx.light.css",
     "swiper/css",
     "swiper/css/navigation",
     "swiper/css/pagination",

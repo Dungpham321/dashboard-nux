@@ -14,7 +14,23 @@ const isDarkMode = computed(() => theme.value === 'dark')
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
+  const link = document.getElementById('dx-theme') as HTMLLinkElement | null;
+  if (theme.value === 'dark') {
+    if (link) {
+      link.href = `/themes/dx.dark.css`;
+    }
+  } else {
+    if (link) {
+      link.href = `/themes/dx.light.css`;
+    }
+  }
 }
+// function switchTheme(themeFile:string) {
+//   const link = document.getElementById('dx-theme');
+//   if (link) {
+//     link.href = `/themes/${themeFile}`;
+//   }
+// }
 
 // onMounted(() => {
 //   const savedTheme = localStorage.getItem('theme') as Theme | null
@@ -25,17 +41,23 @@ const toggleTheme = () => {
 // })
 
 onMounted(() => {
+  const link = document.getElementById('dx-theme') as HTMLLinkElement | null;
   const savedTheme = localStorage.getItem('theme') as Theme | null
   const initialTheme = savedTheme || 'light'
-
   theme.value = initialTheme
   isInitialized.value = true
 
   // Thêm class ngay khi mounted
   if (initialTheme === 'dark') {
-    document.documentElement.classList.add('dark')
+    document.documentElement.classList.add('dark');
+    if (link) {
+      link.href = `/themes/dx.dark.css`;
+    }
   } else {
-    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.remove('dark');
+    if (link) {
+      link.href = `/themes/dx.light.css`;
+    }
   }
 })
 
