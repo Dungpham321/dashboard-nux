@@ -139,6 +139,5 @@ export const buildColumn = (c: any, op: any = {}) => {
 
   Object.assign(col, op);
   if (c.rq) col.validationRules.push({ type: "required" });
-  console.log(col);
   return col;
 };

@@ -6,6 +6,7 @@ export enum ThongBao {
   ThemMoi = "Thêm mới thành công",
   Sua = "Sửa bản ghi thành công",
   xoa = "Xóa thành công",
+  CapNhatThanhCong = "Cập nhật thành công"
 }
 export enum TypeToast {
   Success = "success",

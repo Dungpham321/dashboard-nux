@@ -26,13 +26,13 @@ export async function GetData(url: string, params: object | null = null) {
         Authorization: token.value ? `Bearer ${token.value}` : "",
         "Content-Type": "application/json",
       },
-      responseType: "json",
       query: params || {}, // truyền params nếu có
     });
     return response;
   } catch (error: any) {
     if (error?.status === 401) {
       navigateTo("/dangnhap");
+      return;
     }
     throw error;
   }
@@ -258,30 +258,33 @@ export function DataSource(u: any, k: any, f: any, s: any, exOps = {}) {
   });
   return data;
 }
-export function DataSourceP(u: any, k: any, f: any, s: any, exOps = {}) {//url, key, field, sort, ex ops
-    let op = {
-        ulo: function () { return null; },
-        bl: function () { },
-        al: function (response: any) { },
-        lm: "raw",
-        ca: true,
-        bk: undefined,
-    };
-    op = Object.assign(op, exOps);
-    const data = { items: [], data: {} };
-    data.data = new CustomStore({
-        key: k.length == 1 ? k[0] : k,
-        loadMode: "raw",
-        async load(loadOptions) {
-            op.bl();
-            let result = await OnLoadP(loadOptions, u, f, k, s, op.ulo());
-            if (result) data.items = result["data"];
-            else throw 'Lỗi tải dữ liệu';
-            op.al(result);
-            return result;
-        },
-        byKey: op.bk,
-        cacheRawData: op.ca
-    });
-    return data;
-};
+export function DataSourceP(u: any, k: any, f: any, s: any, exOps = {}) {
+  //url, key, field, sort, ex ops
+  let op = {
+    ulo: function () {
+      return null;
+    },
+    bl: function () {},
+    al: function (response: any) {},
+    lm: "raw",
+    ca: true,
+    bk: undefined,
+  };
+  op = Object.assign(op, exOps);
+  const data = { items: [], data: {} };
+  data.data = new CustomStore({
+    key: k.length == 1 ? k[0] : k,
+    loadMode: "raw",
+    async load(loadOptions) {
+      op.bl();
+      let result = await OnLoadP(loadOptions, u, f, k, s, op.ulo());
+      if (result) data.items = result["data"];
+      else throw "Lỗi tải dữ liệu";
+      op.al(result);
+      return result;
+    },
+    byKey: op.bk,
+    cacheRawData: op.ca,
+  });
+  return data;
+}

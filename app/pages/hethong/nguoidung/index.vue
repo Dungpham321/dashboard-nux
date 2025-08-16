@@ -11,7 +11,7 @@ import { ref, onMounted } from 'vue'
 import BaseDataGrid from '@/components/devextreme/BaseDataGrid.vue';
 import { DataSource } from '@/composables/GlobalService';
 
-const dataSource = DataSource("user", ['_id'], ["ten_dang_nhap", "ho_ten", "email", "so_dien_thoai", "dia_chi", "ngay_tao"], ["ngaytao"]);
+const dataSource = DataSource("user", ['_id'], ["ten_dang_nhap", "ho_ten", "email", "so_dien_thoai", "dia_chi", "ngay_tao", 'mat_khau'], ["ngaytao"]);
 const Columns = [
     { df: "ten_dang_nhap", c: "Tên đăng nhập", rq: true, w: 150 },
     { df: "ho_ten", c: "Tên đầy đủ", rq: true },

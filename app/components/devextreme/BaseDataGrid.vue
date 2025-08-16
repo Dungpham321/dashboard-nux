@@ -1,6 +1,6 @@
 <template>
     <div class='flex flex-col'>
-        <div class='Title_content text-lg mb-24'>
+        <div class='Title_content text-lg mb-24' v-show="visibleTitle">
             {{ props.Title }}
         </div>
         <div class='flex-1 overflow-y-auto'>
@@ -10,7 +10,7 @@
                 :remote-operations="true" :focused-row-enabled="false" :sync-lookup-filter-values="false"
                 :word-wrap-enabled="true" :two-way-binding-enabled="true" :repaint-changes-only="true"
                 :allow-column-resizing="true" @exporting="onExporting" @toolbar-preparing="onToolbarPreparing"
-                @selection-changed="selectedChanged" @row-updating="onRowUpdating" @row-inserting="onRowInserting"
+                @selection-changed="selectedChanged"
                 @row-updated="onRowUpdated" @row-inserted="onRowInsert" @init-new-row="onInitNewRow"
                 @editing-start="onEditingStart">
                 <!-- Cột động -->
@@ -46,7 +46,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 const selectedRowIndex = ref(-1);
-const gridRef = useState('gridRef', () => ref());
+const gridRef = useState('gridRef', () => ref(null));
 const editMode = useState('editMode', () => ref(""));
 import {
     DxDataGrid,
@@ -104,8 +104,12 @@ const props = defineProps({
     Title:{
         type:String,
         default:"Tiêu đề chức năng"
+    },
+    visibleTitle:{
+        type: Boolean,
+        default: true
     }
-})
+});
 
 function onExporting(e) {
     // xử lý xuất file
@@ -307,4 +311,6 @@ const toolbarItem = [
         }
     },
 ]
+
+
 </script>
