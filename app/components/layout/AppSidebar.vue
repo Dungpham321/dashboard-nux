@@ -134,10 +134,9 @@ const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
 const menuGroups = ref([]);
 onMounted(async () => {
-  const response = await GetData("HT_MENU_ITEM/TreeAdmin", {});
+  const response = await GetData("Dashboard/List", {});
   menuGroups.value = response.Data;
 });
-
 // const menuGroups = [
 //   {
 //     title: "Menu",

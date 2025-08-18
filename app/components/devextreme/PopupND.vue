@@ -3,7 +3,7 @@
     :hide-on-outside-click="hideOnOutsideClick" drag-enabled @hiding="onClose">
     <div class="flex flex-col h-full">
       <div class="flex-1 min-h-0 overflow-hidden">
-        <BaseDataGrid :data-source="dataSourced" :key-expr="'_id'" :cols="cols" :visible-title="false"
+        <BaseDataGrid :data-source="dataSourced" :cols="cols" :visible-title="false"
           :selectionMode="'none'" :modeEditing="'cell'" />
       </div>
 

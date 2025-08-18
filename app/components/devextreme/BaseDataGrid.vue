@@ -4,13 +4,12 @@
             {{ props.Title }}
         </div>
         <div class='flex-1 overflow-y-auto'>
-            <DxDataGrid ref="gridRef" :data-source="dataSource" :key-expr="keyExpr" :show-borders="true"
-                :column-auto-width="true" :allow-column-reordering="true" :show-column-lines="true"
-                :show-row-lines="true" :row-alternation-enabled="false" width="100%" height="100%"
-                :remote-operations="true" :focused-row-enabled="false" :sync-lookup-filter-values="false"
-                :word-wrap-enabled="true" :two-way-binding-enabled="true" :repaint-changes-only="true"
-                :allow-column-resizing="true" @exporting="onExporting" @toolbar-preparing="onToolbarPreparing"
-                @selection-changed="selectedChanged"
+            <DxDataGrid ref="gridRef" :data-source="dataSource" :show-borders="true" :column-auto-width="true"
+                :allow-column-reordering="true" :show-column-lines="true" :show-row-lines="true"
+                :row-alternation-enabled="false" width="100%" height="100%" :remote-operations="true"
+                :focused-row-enabled="false" :sync-lookup-filter-values="false" :word-wrap-enabled="true"
+                :two-way-binding-enabled="true" :repaint-changes-only="true" :allow-column-resizing="true"
+                @exporting="onExporting" @toolbar-preparing="onToolbarPreparing" @selection-changed="selectedChanged"
                 @row-updated="onRowUpdated" @row-inserted="onRowInsert" @init-new-row="onInitNewRow"
                 @editing-start="onEditingStart">
                 <!-- Cột động -->
@@ -46,7 +45,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 const selectedRowIndex = ref(-1);
-const gridRef = useState('gridRef', () => ref(null));
+const gridRef = useState('gridRef', () => ref());
 const editMode = useState('editMode', () => ref(""));
 import {
     DxDataGrid,
@@ -65,12 +64,17 @@ import { confirm } from 'devextreme/ui/dialog';
 import { buildColumn } from '@/components/utils/column-utils'
 import { useToast } from '@/composables/GlobalService'
 import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
-import { Title } from '#components';
+
 const { showToast } = useToast();
 
 const props = defineProps({
-    dataSource: Array,
-    keyExpr: String,
+    dataSource: {
+        type: [Array, Object]
+    },
+    keyExpr: {
+        type: String,
+        default: '_id'
+    },
     cols: Array,
     allowedPageSizes: Array,
     selectionMode: {
@@ -101,14 +105,26 @@ const props = defineProps({
         type: String,
         default: ""
     },
-    Title:{
-        type:String,
-        default:"Tiêu đề chức năng"
+    Title: {
+        type: String,
+        default: "Tiêu đề chức năng"
     },
-    visibleTitle:{
+    visibleTitle: {
         type: Boolean,
         default: true
-    }
+    },
+    New: {
+        type: Boolean,
+        default: true
+    },
+    Edit: {
+        type: Boolean,
+        default: true
+    },
+    Delete: {
+        type: Boolean,
+        default: true
+    },
 });
 
 function onExporting(e) {
@@ -218,7 +234,7 @@ const toolbarItem = [
             type: 'danger',
             hint: "Xoá",
             disabled: selectedRowIndex.value,
-            visible: true,
+            visible: props.Delete,
             onClick: function () {
                 var items_selected = gridRef.value?.instance?.getSelectedRowsData();
                 if (items_selected.length) {
@@ -273,7 +289,7 @@ const toolbarItem = [
             type: 'default',
             hint: "Sửa",
             disabled: selectedRowIndex.value === -1,
-            visible: true,
+            visible: props.Edit,
             onClick: function () {
                 editRow();
             }
@@ -304,13 +320,11 @@ const toolbarItem = [
             icon: 'plus',
             type: 'success',
             hint: "Thêm mới",
-            visible: true,
+            visible: props.New,
             onClick: function () {
                 addRow();
             }
         }
     },
 ]
-
-
 </script>

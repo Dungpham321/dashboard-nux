@@ -1,7 +1,10 @@
 <template>
-    <BaseDataGrid :data-source="dataSource.data" :key-expr="'_id'" :cols="Columns" :url="'HT_NHOMQUYEN'"
+    <div>   
+        <BaseDataGrid :data-source="dataSource.data" :cols="Columns" :url="'HT_NHOMQUYEN'"
         :Title="'Quản lý nhóm quyền'" />
-    <PopupND :visible="showPopup" :parm="popupData" :onClose="closePopup" :showFooter="true" />
+    <PopupND v-if="showPopup" :visible="showPopup" :parm="popupData" :onClose="closePopup" :showFooter="true" />
+    </div>
+   
 
 </template>
 <script setup>
@@ -14,10 +17,8 @@ import BaseDataGrid from '@/components/devextreme/BaseDataGrid.vue';
 import { DataSource } from '@/composables/GlobalService';
 import { TrangThaiQuyen } from '~/components/enums/TrangThai';
 import PopupND from '~/components/devextreme/PopupND.vue';
-
 const showPopup = ref(false);
 const popupData = ref({});
-
 const dataSource = DataSource("HT_NHOMQUYEN", ['_id'], ["TEN", "MO_TA", "VI_TRI", "TRANG_THAI", "ngaytao"], ["ngaytao"]);
 //các cột của lưới
 const Columns = [
@@ -67,19 +68,15 @@ const Columns = [
         }
     },
 ]
-
 const closePopup = () =>{
     showPopup.value = false;
 }
 const gridRef = useState('gridRef');
-// const editMode = useState('editMode');
 onMounted(() => {
     gridRef.value.instance.option("editing.form.colCount", 1);
     gridRef.value.instance.option('onInitNewRow', (e) => {
         e.data.TRANG_THAI = 1;
     });
 })
-
-
 
 </script>

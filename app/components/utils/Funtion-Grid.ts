@@ -11,3 +11,11 @@ export function hideGridHeader(gridRef: any) {
     e.toolbarOptions.items = [];
   });
 }
+
+export function accessButton(gridRef: any) {
+  // const gridInstance = gridRef.instance;
+  // if (!gridInstance) return;
+  // gridInstance.option("onToolbarPreparing", (e: any) => {
+     
+  // });
+}

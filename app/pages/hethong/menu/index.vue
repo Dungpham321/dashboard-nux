@@ -34,11 +34,9 @@ const Columns = [
   },
 ]
 const dataSource = DataSource("HT_MENU", ['_id'], ["ma", "ten", "mota", "ngaytao"], ["ngaytao"]);
-// const gridRef = useState('gridRef');
-// const editMode = useState('editMode');
+const gridRef = useState('gridRef');
 onMounted(() => {
-  // console.log('Grid mounted:', gridRef.value);
-  // console.log('Grid mounted:', editMode.value)
+  gridRef.value.instance.option("editing.form.colCount", 1);
 })
 
 

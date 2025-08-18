@@ -21,7 +21,7 @@ import Backdrop from './Backdrop.vue'
 import { ref, onMounted } from 'vue'
 const { isExpanded, isHovered } = useSidebar()
 onMounted(() => {
-  console.log('Layout mounted')
+
 })
 
 </script>

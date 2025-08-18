@@ -1,6 +1,6 @@
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
-
+import { ThongBao, TypeToast } from "~/components/enums/ThongBao";
 export async function login(url: string, formdata: object) {
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiBase;
@@ -16,6 +16,8 @@ export async function login(url: string, formdata: object) {
   }
 }
 export async function GetData(url: string, params: object | null = null) {
+  const router = useRoute().fullPath;
+  Object.assign(params ?? {}, { url: router });
   const config = useRuntimeConfig();
   const token = useCookie("token");
   const apiUrl = config.public.apiBase;
@@ -287,4 +289,17 @@ export function DataSourceP(u: any, k: any, f: any, s: any, exOps = {}) {
     cacheRawData: op.ca,
   });
   return data;
+}
+export async function checkAccess(url: any, params: object | null = null){
+  const router = useRoute().fullPath;
+ params =  Object.assign(params ?? {}, { url: router });
+  console.log(params);
+  const result: any = await GetData(url, params);
+  const data = result.Data;
+  if(data.View){
+    return data;
+  }else{
+    return navigateTo("/401");
+  }
+
 }
