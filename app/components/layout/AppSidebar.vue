@@ -11,7 +11,7 @@
   ]" @mouseenter="!isExpanded && (isHovered = true)" @mouseleave="isHovered = false">
     <div :class="[
       'py-8 flex',
-      !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',
+      !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-center',
     ]">
       <router-link to="/">
         <img v-if="isExpanded || isHovered || isMobileOpen" class="dark:hidden" src="/images/logo/logo.svg" alt="Logo"
@@ -25,13 +25,13 @@
       <nav class="mb-6">
         <div class="flex flex-col gap-4">
           <!-- <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex"> -->
-          <h2
+          <!-- <h2
             :class="['mb-4 text-xs uppercase flex leading-[20px] text-gray-400', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',]">
             <template v-if="isExpanded || isHovered || isMobileOpen">
               Menu quản trị
             </template>
-            <HorizontalDots v-else />
-          </h2>
+<HorizontalDots v-else />
+</h2> -->
           <ul class="flex flex-col gap-4">
             <li v-for="(item, index) in menuGroups" :key="item.NAME">
               <button v-if="item.subItems" @click="toggleSubmenu(0, index)" :class="[
@@ -74,8 +74,6 @@
                     ? 'menu-item-icon-active'
                     : 'menu-item-icon-inactive',
                 ]">
-                  <!-- <component :is="item.ICON" /> -->
-                  <!-- <font-awesome-icon :icon="['fab', 'faAngellist']" size="2x" /> -->
                   <DynamicIcon :name="item.ICON" prefix="fas" />
                 </span>
                 <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.NAME }}</span>
@@ -94,6 +92,7 @@
                           'menu-dropdown-item-inactive': !isActive(subItem.HREF),
                         },
                       ]">
+                        <!-- <DynamicIcon :name="item.ICON" prefix="fas" /> -->
                         {{ subItem.NAME }}
                       </router-link>
                     </li>

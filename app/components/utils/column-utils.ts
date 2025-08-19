@@ -47,7 +47,7 @@ export const colMap: Record<string, any> = {
   edmc: "editorOptions.maskChar",
   edmr: "editorOptions.maskRules",
   mw: "minWidth",
-  edtm: "editorOptions.mode"
+  edtm: "editorOptions.mode",
 };
 
 export const setValueToObject = (
@@ -124,18 +124,23 @@ export const buildColumn = (c: any, op: any = {}) => {
     };
     delete op.editCellTemplate;
   }
-  if (op.cellRender && typeof op.cellRender === "object") {
-    const component = op.cellRender as Component;
-    col.cellRender = (cellInfo: any, container: HTMLElement) => {
-      const Wrapper = defineComponent({
-        render() {
-          return h(component, { value: cellInfo.value });
-        },
-      });
-      createApp(Wrapper).mount(container);
-    };
-    delete op.cellRender;
+  if (typeof op.cellTemplate === "function") {
+    col.cellTemplate = op.cellTemplate;
+   // delete op.cellRender;
   }
+
+  // if (op.cellRender && typeof op.cellRender === "object") {
+  //   const component = op.cellRender as Component;
+  //   col.cellRender = (cellInfo: any, container: HTMLElement) => {
+  //     const Wrapper = defineComponent({
+  //       render() {
+  //         return h(component, { value: cellInfo.value });
+  //       },
+  //     });
+  //     createApp(Wrapper).mount(container);
+  //   };
+  //   delete op.cellRender;
+  // }
 
   Object.assign(col, op);
   if (c.rq) col.validationRules.push({ type: "required" });

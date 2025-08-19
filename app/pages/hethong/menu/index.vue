@@ -38,7 +38,4 @@ const gridRef = useState('gridRef');
 onMounted(() => {
   gridRef.value.instance.option("editing.form.colCount", 1);
 })
-
-
-
 </script>

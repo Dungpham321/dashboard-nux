@@ -1,10 +1,10 @@
 <template>
-    <div>   
+    <div>
         <BaseDataGrid :data-source="dataSource.data" :cols="Columns" :url="'HT_NHOMQUYEN'"
-        :Title="'Quản lý nhóm quyền'" />
-    <PopupND v-if="showPopup" :visible="showPopup" :parm="popupData" :onClose="closePopup" :showFooter="true" />
+            :Title="'Quản lý nhóm quyền'" />
+        <PopupND v-if="showPopup" :visible="showPopup" :parm="popupData" :onClose="closePopup" :showFooter="true" />
     </div>
-   
+
 
 </template>
 <script setup>
@@ -60,7 +60,6 @@ const Columns = [
                                 doituong_loai: '',
                                 chucnang: 'HT_NHOMQUYEN'
                             };
-                        // router.push("/admin/hethong/nhomquyen/" + e.row.data._id);
                         showPopup.value = true;
                     }
                 }
@@ -68,7 +67,7 @@ const Columns = [
         }
     },
 ]
-const closePopup = () =>{
+const closePopup = () => {
     showPopup.value = false;
 }
 const gridRef = useState('gridRef');
@@ -77,6 +76,5 @@ onMounted(() => {
     gridRef.value.instance.option('onInitNewRow', (e) => {
         e.data.TRANG_THAI = 1;
     });
-})
-
+});
 </script>

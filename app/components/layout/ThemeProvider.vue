@@ -25,21 +25,6 @@ const toggleTheme = () => {
     }
   }
 }
-// function switchTheme(themeFile:string) {
-//   const link = document.getElementById('dx-theme');
-//   if (link) {
-//     link.href = `/themes/${themeFile}`;
-//   }
-// }
-
-// onMounted(() => {
-//   const savedTheme = localStorage.getItem('theme') as Theme | null
-//   const initialTheme = savedTheme || 'light' // Default to light theme
-
-//   theme.value = initialTheme
-//   isInitialized.value = true
-// })
-
 onMounted(() => {
   const link = document.getElementById('dx-theme') as HTMLLinkElement | null;
   const savedTheme = localStorage.getItem('theme') as Theme | null

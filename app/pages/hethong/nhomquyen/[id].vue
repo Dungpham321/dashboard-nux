@@ -1,21 +1,20 @@
 <template>
-    <div>
-        <div class="w-auto">
-            <div class="Title_content text-lg mb-24">Phân quyền</div>
-            <div class="flex items-center mb-2 mt-2.5">
-                <label class="min-w-[120px] text-left label-text Title_content">Nhóm quyền</label>
-                <DxSelectBox id="my-selectbox" :data-source="dataListNhomQuyen.data" value-expr="_id" display-expr="TEN"
-                    :value="RID" :width="500" :search-enabled="true"
-                    @selection-changed="(e) => RID = e.selectedItem._id" />
-                <DxButton class="ml-2" text="Lưu lại" type="success" @initialized="onBtnInit" @click="luuQuyen" />
-            </div>
-
-            <DxTreeView :data-source="dataListQuyen.data" data-structure="plain" key-expr="MA" display-expr="TEN"
-                parent-id-expr="CHUC_NANG" root-value="" show-check-boxes-mode="normal" selection-mode="multiple"
-                :select-by-click="true" :select-nodes-recursive="true" :search-enabled="true"
-                no-data-text="không có dữ liệu" :height="320" :visible="true" @initialized="onTreeInitialized"
-                @item-selection-changed="onItemSelectionChanged" />
+    <div class="w-auto">
+        <div class="Title_content text-[22px] mb-4">
+            Phân quyền
         </div>
+        <div class="flex items-center mb-2 mt-2.5">
+            <label class="min-w-[120px] text-left label-text Title_content text-[16px]">Nhóm quyền</label>
+            <DxSelectBox id="my-selectbox" :data-source="dataListNhomQuyen.data" value-expr="_id" display-expr="TEN"
+                :value="RID" :width="500" :search-enabled="true" @selection-changed="(e) => RID = e.selectedItem._id" />
+            <DxButton class="ml-2" text="Lưu lại" type="success" @initialized="onBtnInit" @click="luuQuyen" />
+        </div>
+
+        <DxTreeView :data-source="dataListQuyen.data" data-structure="plain" key-expr="MA" display-expr="TEN"
+            parent-id-expr="CHUC_NANG" root-value="" show-check-boxes-mode="normal" selection-mode="multiple"
+            :select-by-click="true" :select-nodes-recursive="true" :search-enabled="true"
+            no-data-text="không có dữ liệu" :height="'100%'" :visible="true" @initialized="onTreeInitialized"
+            @item-selection-changed="onItemSelectionChanged" />
     </div>
 </template>
 <script setup>
@@ -58,7 +57,7 @@ const loadData = async (selected) => {
         if (hasChild) {
             treeViewRef.value.selectItem(item.QUYEN)
         }
-    })
+    });
     autoSelect.value = false
 }
 

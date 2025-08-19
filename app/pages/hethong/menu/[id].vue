@@ -4,7 +4,7 @@
     </BaseDataGrid>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, h } from 'vue';
 import BaseDataGrid from '@/components/devextreme/BaseDataGrid.vue';
 import { DataSource, DataSourceP } from '@/composables/GlobalService';
 import OpsGridDropdownTree from '@/components/devextreme/OpsGridDropdownTree.vue';
@@ -20,6 +20,21 @@ const dataCapCha = DataSourceP("HT_MENU_ITEM/List", ["_id"], ["NAME", "PID"], ["
     ulo() { return { MID: route.params.id } }
 });
 const dataPerm = DataSourceP("HT_MENU_ITEM/Perm", ["MA"], ["MA", "TEN", "NHOM_QUYEN", "CHUC_NANG"], ["SAP_XEP"]);
+
+const renderPermCell = (element, cell) => {
+    let str = ""
+    if (cell.value) {
+        const ids = cell.value.split(",")
+        ids.forEach((vl) => {
+            const vls = vl.split(";")
+            str += (str === "" ? "" : ", ") + vls[0]
+        });
+    }
+    const span = document.createElement("span");
+    span.textContent = str || "";
+    element.appendChild(span);
+
+}
 const Columns = [
     { df: "NAME", c: "Tên", rq: true, w: 150 },
     { df: "HREF", c: "Đường dẫn" },
@@ -27,17 +42,7 @@ const Columns = [
     {
         df: "PERM", c: "Quyền", lds: dataPerm.data, lve: 'MA', lde: 'TEN',
         ops: {
-            cellRender: function (cell) {
-                let str = "";
-                if (cell.value) {
-                    var ids = cell.value.split(",");
-                    ids.forEach(function (vl) {
-                        var vls = vl.split(";");
-                        str += (str == "" ? "" : ", ") + vls[0];
-                    });
-                    return str;
-                }
-            },
+            cellTemplate: renderPermCell,
             editCellTemplate: OpsGridDropdownTrees
         }
     },

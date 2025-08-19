@@ -1,9 +1,9 @@
 <template>
-    <div class='flex flex-col'>
-        <div class='Title_content text-lg mb-24' v-show="visibleTitle">
+    <div class='content'>
+        <div class='Title_content text-[22px] mb-4' v-show="visibleTitle">
             {{ props.Title }}
         </div>
-        <div class='flex-1 overflow-y-auto'>
+        <div class='h-full'>
             <DxDataGrid ref="gridRef" :data-source="dataSource" :show-borders="true" :column-auto-width="true"
                 :allow-column-reordering="true" :show-column-lines="true" :show-row-lines="true"
                 :row-alternation-enabled="false" width="100%" height="100%" :remote-operations="true"
@@ -39,7 +39,6 @@
             </DxDataGrid>
         </div>
     </div>
-
 </template>
 
 <script setup>
