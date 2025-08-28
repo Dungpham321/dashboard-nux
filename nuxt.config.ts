@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "jsvectormap/dist/jsvectormap.css",
     "flatpickr/dist/flatpickr.css",
     "@fortawesome/fontawesome-svg-core/styles.css",
+    "@fortawesome/fontawesome-free/css/all.min.css"
   ],
   build: {
     transpile: [

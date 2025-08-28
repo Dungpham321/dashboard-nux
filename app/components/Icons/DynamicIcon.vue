@@ -1,7 +1,6 @@
 <template>
   <font-awesome-icon v-if="icon" :icon="[prefix, name]" />
 </template>
-
 <script setup lang="ts">
 import { library } from '@fortawesome/fontawesome-svg-core'
 import * as brands from '@fortawesome/free-brands-svg-icons'
@@ -29,8 +28,8 @@ const icon = computed(() => {
     }
   }
   return undefined
+});
 
-})
 watchEffect(() => {
   if (icon.value) {
     library.add(icon.value)

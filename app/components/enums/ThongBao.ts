@@ -6,11 +6,24 @@ export enum ThongBao {
   ThemMoi = "Thêm mới thành công",
   Sua = "Sửa bản ghi thành công",
   xoa = "Xóa thành công",
-  CapNhatThanhCong = "Cập nhật thành công"
+  CapNhatThanhCong = "Cập nhật thành công",
 }
 export enum TypeToast {
   Success = "success",
   Error = "error",
   Info = "info",
   Warning = "warning",
+}
+export enum dsChucNang {
+  donvi = 1,
+  nhomquyen = 2
+}
+
+export enum dsDoiTuong{
+  DM_DANHMUC = "DM_DANHMUC",
+  HT_NGUOIDUNG = "HT_NGUOIDUNG"
+}
+export enum varVaiTro{
+  quantrihethong =  1,
+  quantridonvi = 2
 }

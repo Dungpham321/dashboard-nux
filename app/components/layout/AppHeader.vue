@@ -76,11 +76,12 @@ const toggleDropdown = () => {
   notifying.value = false
 }
 onMounted(() => {
-  GetData("HT_CAUHINH/GetTitle",{MA: "HETHONG"}).then((response:any) =>{
-    if(response.status == 200){
-      Title.value = response.Data;
-    }
-  });
+  // GetData("HT_CAUHINH/GetTitle",{MA: "HETHONG"}).then((response:any) =>{
+  //   if(response.status == 200){
+  //     Title.value = response.Data;
+  //   }
+  // });
+  Title.value = "Phần mềm ..."
 });
 const isApplicationMenuOpen = ref(false)
 

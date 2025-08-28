@@ -4,21 +4,40 @@
             {{ props.Title }}
         </div>
         <div class='h-full'>
-            <DxDataGrid ref="gridRef" :data-source="dataSource" :show-borders="true" :column-auto-width="true"
-                :allow-column-reordering="true" :show-column-lines="true" :show-row-lines="true"
-                :row-alternation-enabled="false" width="100%" height="100%" :remote-operations="true"
-                :focused-row-enabled="false" :sync-lookup-filter-values="false" :word-wrap-enabled="true"
-                :two-way-binding-enabled="true" :repaint-changes-only="true" :allow-column-resizing="true"
-                @exporting="onExporting" @toolbar-preparing="onToolbarPreparing" @selection-changed="selectedChanged"
-                @row-updated="onRowUpdated" @row-inserted="onRowInsert" @init-new-row="onInitNewRow"
-                @editing-start="onEditingStart">
+            <DxDataGrid 
+                ref="gridRef"
+                :key="gridKey"
+                :data-source="dataSource" 
+                :show-borders="true" 
+                :column-auto-width="true"
+                :allow-column-reordering="true" 
+                :show-column-lines="true" 
+                :show-row-lines="true"
+                :row-alternation-enabled="false" 
+                 width="100%" height="100%" 
+                :remote-operations="true"
+                :focused-row-enabled="false" 
+                :sync-lookup-filter-values="false" 
+                :word-wrap-enabled="true"
+                :two-way-binding-enabled="true" 
+                :repaint-changes-only="true" 
+                :allow-column-resizing="true"
+                @exporting="onExporting" 
+                @toolbar-preparing="onToolbarPreparing" 
+                @selection-changed="selectedChanged"
+                @row-updated="onRowUpdated"
+                @row-inserted="onRowInsert" 
+                @init-new-row="onInitNewRow"
+                @editing-start="onEditingStart"
+                @edit-canceled="onCancel"
+                >
                 <!-- Cột động -->
-                <template v-for="(col, index) in cols" :key="index">
-                    <DxColumn v-bind="buildColumn(col, col.ops ?? {})" />
+                <template v-for="(col, index) in formColumns" :key="col.df || index">
+                    <DxColumn v-bind="col" />
                 </template>
                 <!-- Paging -->
-                <DxPaging :enabled="true" :page-size="20" />
-                <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="allowedPageSizes" />
+                <DxPaging :enabled="true" :page-size="20"/>
+                <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="allowedPageSizes" :display-mode="'compact'"/>
                 <!-- Selection -->
                 <DxSelection :mode="selectionMode" select-all-mode="allPages" show-check-boxes-mode="onClick" />
                 <!-- Search -->
@@ -27,8 +46,8 @@
                 <DxEditing :mode="modeEditing">
                     <DxPopup title="Thêm mới" :show-title="true" :width="width" :height="height" />
                     <DxForm>
-                        <template v-for="(col, index) in cols" :key="index">
-                            <DxColumn v-bind="buildColumn(col, col.ops ?? {})" />
+                        <template v-for="(col, index) in formColumns" :key="index">
+                            <DxColumn v-bind="col" />
                         </template>
                     </DxForm>
                 </DxEditing>
@@ -42,10 +61,13 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, defineExpose, onBeforeUnmount } from 'vue'
 const selectedRowIndex = ref(-1);
-const gridRef = useState('gridRef', () => ref());
-const editMode = useState('editMode', () => ref(""));
+// const isNew = ref(false);
+// const isEdit = ref(false);
+// const gridRef = useState('gridRef', () => ref());
+const editMode = ref("");
+import { useGridState } from '@/composables/useGridState';
 import {
     DxDataGrid,
     DxPaging,
@@ -63,16 +85,14 @@ import { confirm } from 'devextreme/ui/dialog';
 import { buildColumn } from '@/components/utils/column-utils'
 import { useToast } from '@/composables/GlobalService'
 import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
-
 const { showToast } = useToast();
-
 const props = defineProps({
     dataSource: {
         type: [Array, Object]
     },
     keyExpr: {
         type: String,
-        default: '_id'
+        default: 'ID'
     },
     cols: Array,
     allowedPageSizes: Array,
@@ -124,7 +144,14 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    gridKey:{
+        type: String,
+        default:"grid"
+    }
 });
+
+
+const { gridRef, gridKey } = useGridState(props.gridKey);
 
 function onExporting(e) {
     // xử lý xuất file
@@ -136,7 +163,6 @@ function onToolbarPreparing(e) {
     });
 }
 function onRowUpdated(e) {
-
     if (e.component.option('editing.mode') === 'popup') {
         showToast(ThongBao.Sua, TypeToast.Success);
     }
@@ -148,7 +174,6 @@ function onRowInsert(e) {
     }
     e.component.refresh();
 }
-
 function selectedChanged(e) {
     if (e.selectedRowKeys.length > 0) {
         const index = e.component.getRowIndexByKey(e.selectedRowKeys[0]);
@@ -169,6 +194,7 @@ function selectedChanged(e) {
 function addRow() {
     const gridInstance = gridRef.value?.instance;
     if (gridInstance) {
+        editMode.value = "new";
         gridInstance.addRow();
         gridInstance.deselectAll();
     }
@@ -176,12 +202,12 @@ function addRow() {
 function editRow() {
     const gridInstance = gridRef.value?.instance;
     if (gridInstance && selectedRowIndex.value >= 0) {
+        editMode.value = "edit";
         gridInstance.editRow(selectedRowIndex.value);
         gridInstance.deselectAll();
     }
 }
 function onInitNewRow(e) {
-    editMode.value = "new";
     e.component.option("editing").popup.title = "Thêm mới";
 }
 function onEditingStart(e) {
@@ -205,7 +231,9 @@ function updateToolbarItems(updates) {
         }
     });
 }
-
+function onCancel(e){
+    editMode.value = "";
+}
 const toolbarItem = [
     {
         location: "after",
@@ -218,7 +246,6 @@ const toolbarItem = [
             disabled: false,
             onClick: function () {
                 gridRef.value?.instance?.refresh()
-
             },
         }
     },
@@ -257,8 +284,7 @@ const toolbarItem = [
                             gridRef.value?.instance?.beginCustomLoading("Đang xử lý ...");
                             let result = PostData(props.url + "/Delete", { items: JSON.stringify(items) });
                             result.then((response) => {
-                                console.log(response);
-                                if (response.Data != null && response.Data.length) {
+                                if (typeof response != "undefined" && response.Data != null && response.Data.length) {
                                     alert(response.Data.join('<br/>'), "Thông báo");
                                 } else {
                                     showToast(ThongBao.xoa, TypeToast.Success);
@@ -326,4 +352,10 @@ const toolbarItem = [
         }
     },
 ]
+const formColumns = computed(() =>
+  props.cols.map(col => buildColumn(col, col.ops ?? {}))
+);
+defineExpose({
+  editMode
+})
 </script>

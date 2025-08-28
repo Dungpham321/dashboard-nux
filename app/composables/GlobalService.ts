@@ -17,7 +17,7 @@ export async function login(url: string, formdata: object) {
 }
 export async function GetData(url: string, params: object | null = null) {
   const router = useRoute().fullPath;
-  Object.assign(params ?? {}, { url: router });
+  Object.assign(params ?? {}, { url: router.replace(/^\/+/, '') });
   const config = useRuntimeConfig();
   const token = useCookie("token");
   const apiUrl = config.public.apiBase;
@@ -155,14 +155,12 @@ export async function OnLoad(
     fields: JSON.stringify(fields),
     keys: JSON.stringify(keys),
     defaultSort: JSON.stringify(defaultSort),
-    sort: loadOptions.sort ? JSON.stringify(loadOptions.sort) : null,
-    filter: loadOptions.filter ? JSON.stringify(loadOptions.filter) : null,
+    sort: loadOptions.sort ? JSON.stringify(loadOptions.sort) : [],
+    filter: loadOptions.filter ? JSON.stringify(loadOptions.filter) : [],
     skip: loadOptions.skip,
     take: loadOptions.take,
     dataField: loadOptions.dataField,
-    searchOperation: loadOptions.searchOperation
-      ? loadOptions.searchOperation
-      : null,
+    searchOperation: loadOptions.searchOperation? loadOptions.searchOperation: null,
     searchValue: loadOptions.searchValue ? loadOptions.searchValue : null,
     requireTotalCount: loadOptions.requireTotalCount || true,
   } as LoadOptions;
@@ -247,10 +245,10 @@ export function DataSource(u: any, k: any, f: any, s: any, exOps = {}) {
     async insert(values) {
       op.bi(values);
       let result: any = await PostData(u + op.ui, values);
-      if (result.status == 200) {
+      // if (result.status == 200) {
         op.ai(result);
         return result;
-      }
+      // }
     },
     byKey: op.bk,
     cacheRawData: op.ca,
@@ -293,7 +291,6 @@ export function DataSourceP(u: any, k: any, f: any, s: any, exOps = {}) {
 export async function checkAccess(url: any, params: object | null = null){
   const router = useRoute().fullPath;
  params =  Object.assign(params ?? {}, { url: router });
-  console.log(params);
   const result: any = await GetData(url, params);
   const data = result.Data;
   if(data.View){
@@ -302,4 +299,33 @@ export async function checkAccess(url: any, params: object | null = null){
     return navigateTo("/401");
   }
 
+}
+
+
+interface ToolbarButtonOptions {
+  text: string;
+  icon: string;
+  type: 'default' | 'danger' | 'success' | 'normal';
+  hint: string;
+  onClick?: () => void;
+}
+
+export function useToolbarButton(toolbarItem: any) {
+  function addToolbarButton({ text , icon, type, hint, onClick }: ToolbarButtonOptions) {
+    toolbarItem.value.push({
+      location: 'after',
+      widget: 'dxButton',
+      locateInMenu: 'auto',
+      options: {
+        text,
+        icon,
+        type,
+        hint,
+        visible: true,
+        onClick: onClick || (() => navigateTo("/hethong/menu"))
+      }
+    });
+  }
+
+  return { addToolbarButton };
 }

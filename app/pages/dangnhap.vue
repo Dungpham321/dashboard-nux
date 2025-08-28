@@ -173,6 +173,7 @@
             </div>
         </div>
     </FullScreenLayout>
+    
 </template>
 <script setup lang="ts">
 definePageMeta({
@@ -186,6 +187,7 @@ import FullScreenLayout from '@/components/layout/FullScreenLayout.vue'
 import { useCookie } from '#app';
 import { useToast } from '@/composables/GlobalService'
 import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
+import { encodeBase64 } from '~/components/utils/Base64';
 
 const ten_dang_nhap = ref('')
 const mat_khau = ref('')
@@ -197,20 +199,19 @@ const togglePasswordVisibility = () => {
 }
 const handleSubmit = async () => {
     const reqData = {
-        ten_dang_nhap: ten_dang_nhap.value,
-        mat_khau: mat_khau.value
+        TenDangNhap: ten_dang_nhap.value,
+        MatKhau: encodeBase64(mat_khau.value),
+        DVQL_ID: 1
     }
-    const result: any = await login('login', reqData);
+    const result: any = await login('HeThong/HT_DANGNHAP', reqData);
     const loginData = result.Data.Data;
     if (loginData != null) {
-        // const encryptedToken = CryptoJS.AES.encrypt(loginData.Accesstoken, secretKey).toString();
         const token = useCookie('token');
         const user = useCookie('user');
-        user.value = JSON.stringify({ ten_dang_nhap: loginData.ten_dang_nhap, email: loginData.email });
-        token.value = loginData.Accesstoken;
+        user.value = JSON.stringify({ ten_dang_nhap: loginData.TEN_DANG_NHAP, email: loginData.EMAIL, DVQL_ID: loginData.DVQL_ID});
+        token.value = loginData.accessToken;
         showToast(ThongBao.login, TypeToast.Success);
         navigateTo('/');
     }
-
 }
 </script>

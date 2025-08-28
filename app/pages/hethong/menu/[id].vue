@@ -1,7 +1,10 @@
 <template>
-    <BaseDataGrid :data-source="dataSource.data" :key-expr="'_id'" :cols="Columns" :url="'HT_MENU_ITEM'"
-        :Title="'Quản lý các liên kết'" :toolbars="toolbarItem" :width="800">
-    </BaseDataGrid>
+    <div v-if="isReady">
+        <BaseDataGrid :data-source="dataSource.data" :key-expr="'ID'" :cols="Columns" :url="'HeThong/HT_MENUITEM'"
+            :Title="AccessRights.Title" :New="AccessRights.New" :Edit="AccessRights.Edit" :Delete="AccessRights.Delete"
+            :toolbars="toolbarItem" :width="800">
+        </BaseDataGrid>
+    </div>
 </template>
 <script setup>
 import { ref, h } from 'vue';
@@ -10,16 +13,17 @@ import { DataSource, DataSourceP } from '@/composables/GlobalService';
 import OpsGridDropdownTree from '@/components/devextreme/OpsGridDropdownTree.vue';
 import OpsGridDropdownTrees from '@/components/devextreme/opsGridDropdownTrees.vue';
 const route = useRoute()
-const dataSource = DataSource("HT_MENU_ITEM", ['_id'], ["NAME", "HREF", "PERM", "WEIGHT", "PID", "ICON", "HIDEN"], ["ngaytao"], {
+const dataSource = DataSource("HeThong/HT_MENUITEM", ['ID'], ["ID", "NAME", "HREF", "PID", "PERM", "WEIGHT", "HIDEN", "ICON"], ["PID", "WEIGHT"], {
     ulo() { return { MID: route.params.id } },
     bi(values) {
         values.MID = route.params.id;
-    }
+    },
+    uu: "/" + route.params.id,
 });
-const dataCapCha = DataSourceP("HT_MENU_ITEM/List", ["_id"], ["NAME", "PID"], ["PID", "WEIGHT"], {
+const dataCapCha = DataSourceP("HeThong/HT_MENUITEM/List", ["ID"], ["NAME", "PID"], ["PID", "WEIGHT"], {
     ulo() { return { MID: route.params.id } }
 });
-const dataPerm = DataSourceP("HT_MENU_ITEM/Perm", ["MA"], ["MA", "TEN", "NHOM_QUYEN", "CHUC_NANG"], ["SAP_XEP"]);
+const dataPerm = DataSourceP("HeThong/HT_MENUITEM/Perm", ["MA"], ["MA", "TEN", "NHOM_QUYEN", "CHUC_NANG"], ["CHUC_NANG", "NHOM_QUYEN", "SAP_XEP"]);
 
 const renderPermCell = (element, cell) => {
     let str = ""
@@ -38,7 +42,7 @@ const renderPermCell = (element, cell) => {
 const Columns = [
     { df: "NAME", c: "Tên", rq: true, w: 150 },
     { df: "HREF", c: "Đường dẫn" },
-    { df: "PID", c: "Cấp cha", lds: dataCapCha.data, lve: '_id', lde: 'NAME', ops: { editCellTemplate: OpsGridDropdownTree } },
+    { df: "PID", c: "Cấp cha", lds: dataCapCha.data, lve: 'ID', lde: 'NAME', ops: { editCellTemplate: OpsGridDropdownTree } },
     {
         df: "PERM", c: "Quyền", lds: dataPerm.data, lve: 'MA', lde: 'TEN',
         ops: {
@@ -67,10 +71,40 @@ const toolbarItem = [
         }
     },
 ]
-const gridRef = useState('gridRef');
-onMounted(() => {
-    gridRef.value.instance.option('onInitNewRow', (e) => {
-        e.data.HIDEN = false;
-    });
+
+const isReady = ref(false);
+const AccessRights = reactive({
+    New: false,
+    Edit: false,
+    Delete: false,
+    Title: ""
 });
+onBeforeMount(async () => {
+    const check = await checkAccess("HeThong/HT_MENUITEM/Access", { MID: route.params.id });
+    if (check) {
+        AccessRights.New = check.New;
+        AccessRights.Edit = check.Edit;
+        AccessRights.Delete = check.Delete;
+        AccessRights.Title = check.Title
+    }
+    isReady.value = true;
+
+});
+
+const gridRef = useState('gridRef');
+watch(isReady, (ready) => {
+    if (ready) {
+        nextTick(() => {
+            const instance = gridRef.value?.instance
+            if (instance) {
+                instance.option('onInitNewRow', (e) => {
+                    e.data.HIDEN = false;
+                });
+            } else {
+                console.warn('⚠️ Grid instance vẫn chưa có sau isReady')
+            }
+        })
+
+    }
+})
 </script>

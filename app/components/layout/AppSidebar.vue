@@ -34,7 +34,7 @@
 </h2> -->
           <ul class="flex flex-col gap-4">
             <li v-for="(item, index) in menuGroups" :key="item.NAME">
-              <button v-if="item.subItems" @click="toggleSubmenu(0, index)" :class="[
+              <button v-if="item.Nodes" @click="toggleSubmenu(0, index)" :class="[
                 'menu-item group w-full',
                 {
                   'menu-item-active': isSubmenuOpen(0, index),
@@ -62,7 +62,7 @@
                   },
                 ]" />
               </button>
-              <router-link v-else-if="item.HREF" :to="item.HREF" :class="[
+              <router-link v-else-if="item.HREF" :to="'/'+item.HREF" :class="[
                 'menu-item group',
                 {
                   'menu-item-active': isActive(item.HREF),
@@ -84,8 +84,8 @@
                   (isExpanded || isHovered || isMobileOpen)
                   ">
                   <ul class="mt-2 space-y-1 ml-9">
-                    <li v-for="subItem in item.subItems" :key="subItem.NAME">
-                      <router-link v-if="subItem.HREF" :to="subItem.HREF" :class="[
+                    <li v-for="subItem in item.Nodes" :key="subItem.NAME">
+                      <router-link v-if="subItem.HREF" :to="'/'+subItem.HREF" :class="[
                         'menu-dropdown-item',
                         {
                           'menu-dropdown-item-active': isActive(subItem.HREF),
@@ -133,8 +133,8 @@ const { isExpanded, isMobileOpen, isHovered, openSubmenu } = useSidebar();
 
 const menuGroups = ref([]);
 onMounted(async () => {
-  const response = await GetData("Dashboard/List", {});
-  menuGroups.value = response.Data;
+  const response = await GetData("Dashboard/MenuAdmin", {});
+  menuGroups.value = response.Data.items;
 });
 // const menuGroups = [
 //   {
@@ -214,14 +214,14 @@ onMounted(async () => {
 //   },
 // ];
 const isActive = (path) => route.path === path;
+
 const toggleSubmenu = (groupIndex, itemIndex) => {
   const key = `${groupIndex}-${itemIndex}`;
   openSubmenu.value = openSubmenu.value === key ? null : key;
 };
 const isAnySubmenuRouteActive = computed(() => {
-
   return menuGroups.value.some((group) =>
-    group.subItems && group.subItems.some((subItem) => isActive(subItem.path))
+    group.Nodes && group.Nodes.some((subItem) => isActive(subItem.HREF))
   );
 });
 const isSubmenuOpen = (groupIndex, itemIndex) => {
@@ -229,8 +229,8 @@ const isSubmenuOpen = (groupIndex, itemIndex) => {
   return (
     openSubmenu.value === key ||
     (isAnySubmenuRouteActive.value &&
-      menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) =>
-        isActive(subItem.path)
+      menuGroups[groupIndex].items[itemIndex].Nodes?.some((subItem) =>
+        isActive(subItem.HREF)
       ))
   );
 };

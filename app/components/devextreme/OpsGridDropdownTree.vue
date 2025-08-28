@@ -52,7 +52,7 @@ const onContentReady = (e: any) => {
   <DxDropDownBox
     :opened="isDropDownOpened"
     :value="treeBoxValue"
-    value-expr="_id"
+    value-expr="ID"
     display-expr="NAME"
     placeholder="Lựa chọn..."
     :show-clear-button="true"
@@ -64,7 +64,7 @@ const onContentReady = (e: any) => {
       <TreeView
         ref="treeViewRef"
         :data-source="props.data.column?.lookup?.dataSource"
-        key-expr="_id"
+        key-expr="ID"
         parent-id-expr="PID"
         data-structure="plain"
         selection-mode="single"

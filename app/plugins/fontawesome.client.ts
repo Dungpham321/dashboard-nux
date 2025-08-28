@@ -1,17 +1,12 @@
-import { library, config } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import * as brands from "@fortawesome/free-brands-svg-icons";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { library, config } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
 
-config.autoAddCss = false;
-const dynamicIcons: (keyof typeof brands)[] = ["faGithub", "faTwitter"]
+config.autoAddCss = false
+library.add(fas, far, fab)
 
-dynamicIcons.forEach((iconName) => {
-  const icon = brands[iconName] as IconDefinition;
-  if (icon) {
-    library.add(icon);
-  }
-});
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component("font-awesome-icon", FontAwesomeIcon);

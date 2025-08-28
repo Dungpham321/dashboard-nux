@@ -1,6 +1,7 @@
 <template>
     <DxLoadPanel :visible="isLoading" />
-    <BaseForm v-if="isReady" :formData="formData" :formItems="userFormConfig" :formOptions="formOption" :Title="Title" />
+    <BaseForm v-if="isReady" :formData="formData" :formItems="userFormConfig" :formOptions="formOption"
+        :Title="Title" />
 </template>
 <script setup>
 definePageMeta({
@@ -12,6 +13,7 @@ import { DxLoadPanel } from 'devextreme-vue/load-panel'
 import { PostData, useToast } from '@/composables/GlobalService';
 import { ref, onBeforeMount } from 'vue'
 import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
+import templateEditFile from '~/components/devextreme/templateEditFile.vue';
 const isLoading = ref(false);
 const isReady = ref(false);
 const formData = reactive({});
@@ -49,6 +51,11 @@ const userFormConfig = [
             { df: 'smtp_pass', lt: 'SMTP Pass', edmo: 'password' },
             { df: 'smtp_from', lt: 'SMTP Name' },
             { df: 'smtp_mail', lt: 'SMTP Email' },
+            {
+                df: 'logo', lt: 'Logo hệ thống', t: templateEditFile, tProps:{
+                    soluong: 1
+                }
+            },
         ]
     },
     {

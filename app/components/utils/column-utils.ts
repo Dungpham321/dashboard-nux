@@ -99,7 +99,7 @@ export const buildColumn = (c: any, op: any = {}) => {
   if (c.lds) {
     col.lookup = {
       dataSource: c.lds,
-      valueExpr: c.lve ?? "_id",
+      valueExpr: c.lve ?? "ID",
       displayExpr: (item: any) => item && lookUpDisplay(item, c.lde ?? "TEN"),
     };
     col.editorOptions.showClearButton = true;
@@ -113,8 +113,10 @@ export const buildColumn = (c: any, op: any = {}) => {
     delete op.formItem;
   }
   if (op.editCellTemplate && typeof op.editCellTemplate === "object") {
+    
     const component = op.editCellTemplate;
     col.editCellTemplate = (cellElement: HTMLElement, cellInfo: any) => {
+      if (cellInfo.rowType !== 'data') return;
       const Wrapper = {
         render() {
           return h(component, { data: cellInfo });
@@ -126,7 +128,6 @@ export const buildColumn = (c: any, op: any = {}) => {
   }
   if (typeof op.cellTemplate === "function") {
     col.cellTemplate = op.cellTemplate;
-   // delete op.cellRender;
   }
 
   // if (op.cellRender && typeof op.cellRender === "object") {
