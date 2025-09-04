@@ -113,7 +113,6 @@ export const buildColumn = (c: any, op: any = {}) => {
     delete op.formItem;
   }
   if (op.editCellTemplate && typeof op.editCellTemplate === "object") {
-    
     const component = op.editCellTemplate;
     col.editCellTemplate = (cellElement: HTMLElement, cellInfo: any) => {
       if (cellInfo.rowType !== 'data') return;

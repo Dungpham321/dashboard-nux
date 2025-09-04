@@ -1,13 +1,16 @@
 <template>
-  <DxPopup  :visible="visible" :title="title" :width="width" :height="height" :show-close-button="showCloseButton"
+  <DxPopup :visible="visible" :title="title" :width="width" :height="height" :show-close-button="showCloseButton"
     :hide-on-outside-click="hideOnOutsideClick" drag-enabled @hiding="onClose">
-    <div class="flex flex-col h-11/12">
-      <BaseDataGrid :grid-key="gridkey" :data-source="dataSourced" :cols="cols" :visible-title="false" :selectionMode="'none'"
-        :modeEditing="'cell'" />
-      <div v-if="showFooter" class="flex justify-end mt-4 gap-2 py-2">
+    <div class="flex flex-col h-full overflow-hidden">
+      <div class="flex-grow overflow-auto">
+        <BaseDataGrid :grid-key="gridkey" :data-source="dataSourced" :cols="cols" :visible-title="false"
+          :selectionMode="'none'" :modeEditing="'cell'" class="h-full" />
+      </div>
+      <div v-if="showFooter" class="flex justify-end gap-2 py-2 shrink-0">
         <DxButton text="Hủy" @click="onClose" type="normal" />
         <DxButton text="Đồng ý" @click="handleConfirm" type="success" />
       </div>
+
     </div>
   </DxPopup>
 </template>
@@ -119,10 +122,10 @@ const getDataSource = async () => {
   })
   dataSourced.value = response.Data
 }
-const gridRef = useState('gridRef-'+gridkey.value);
+const gridRef = useState('gridRef-' + gridkey.value);
 watch(() => props.visible, async (val) => {
   if (val) {
-    const saveVisible = typeof props.parm.mode != 'undefined' && props.parm.mode == 'view'? false : true;
+    const saveVisible = typeof props.parm.mode != 'undefined' && props.parm.mode == 'view' ? false : true;
     await getDataSource();
     generateCols(props.parm, saveVisible ?? true, dataSourced.value, gridRef)
     hideGridHeader(gridRef.value);
@@ -135,7 +138,7 @@ watch(() => props.visible, async (val) => {
 });
 
 const handleConfirm = async () => {
-  await PostData('HeThong/HT_NGUOIDUNG_SD'+ (props.parm.doituongid + '' == '' ? '/Access' : ''), {
+  await PostData('HeThong/HT_NGUOIDUNG_SD' + (props.parm.doituongid + '' == '' ? '/Access' : ''), {
     NGUOIDUNG_ID: props.parm?.nguoidungid,
     DOITUONG_ID: props.parm?.doituongid,
     CHUCNANG: props.parm?.chucnang,

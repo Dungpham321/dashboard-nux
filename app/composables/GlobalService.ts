@@ -1,5 +1,7 @@
 import CustomStore from "devextreme/data/custom_store";
 import notify from "devextreme/ui/notify";
+import { alert } from 'devextreme/ui/dialog';
+
 import { ThongBao, TypeToast } from "~/components/enums/ThongBao";
 export async function login(url: string, formdata: object) {
   const config = useRuntimeConfig();
@@ -82,7 +84,6 @@ export async function PutData(url: string, data: object | null) {
     throw error;
   }
 }
-
 export function useToast() {
   function showToast(
     message: string,
@@ -107,6 +108,10 @@ export function useToast() {
     );
   }
   return { showToast };
+}
+export function showAlert(mess:any, Title:any){
+  const defaultTitle = 'Thông báo';
+   alert(mess, Title || defaultTitle);
 }
 //dataSoure
 interface LoadOptions {
@@ -259,7 +264,6 @@ export function DataSource(u: any, k: any, f: any, s: any, exOps = {}) {
   return data;
 }
 export function DataSourceP(u: any, k: any, f: any, s: any, exOps = {}) {
-  //url, key, field, sort, ex ops
   let op = {
     ulo: function () {
       return null;
@@ -301,7 +305,9 @@ export async function checkAccess(url: any, params: object | null = null){
 
 }
 
-
+export function CheckEmpty(t: any){
+    return !(typeof t !== 'undefined' && t != null && t !== '');
+};
 interface ToolbarButtonOptions {
   text: string;
   icon: string;

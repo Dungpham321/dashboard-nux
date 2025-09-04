@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   },
   plugins: [
     { src: "~/plugins/jsvectormap.client.ts", mode: "client" },
-    {src: "~/plugins/fontawesome.client.ts", mode:"client"}
+    {src: "~/plugins/fontawesome.client.ts", mode:"client"},
   ],
   devtools: { enabled: true },
   // ssr: true,

@@ -1,9 +1,8 @@
 <template>
     <div v-if="isReady">
-        <BaseDataGrid :grid-key="grid" :data-source="dataSource.data" :key-expr="'ID'" :cols="Columns"
+        <BaseDataGrid ref="childRef" :grid-key="grid" :data-source="dataSource.data" :key-expr="'ID'" :cols="Columns"
             :url="'HeThong/HT_NGUOIDUNG'" :Title="AccessRights.Title" :New="AccessRights.New" :Edit="AccessRights.Edit"
             :Delete="AccessRights.Delete" :toolbars="toolbarItem" />
-        <PopupND v-show="showPopup" :visible="showPopup" :parm="popupData" :onClose="closePopup" :showFooter="true" />
     </div>
 </template>
 <script setup>
@@ -13,20 +12,23 @@ definePageMeta({
 });
 import { ref, onMounted, onBeforeMount, watch, nextTick, createApp, h, render } from 'vue'
 import BaseDataGrid from '@/components/devextreme/BaseDataGrid.vue';
-import { DataSource, checkAccess } from '@/composables/GlobalService';
+import { DataSource, checkAccess, showAlert, PostData, useToast } from '@/composables/GlobalService';
 import { dsTrangThaiK } from '~/components/enums/TrangThai';
 import { useToolbarButton } from '@/composables/GlobalService';
 import { dsChucNang, dsDoiTuong, varVaiTro } from '~/components/enums/ThongBao';
 import EditTemplateNDS from '~/components/devextreme/EditTemplateNDS.vue';
-import { convertToKey, TemplateND } from '~/components/utils/Funtion-Grid';
-import PopupND from '~/components/devextreme/PopupND.vue';
+import { convertToKey } from '~/components/utils/Funtion-Grid';
 import EditTemplateND from '~/components/devextreme/EditTemplateND.vue';
+import TemplateND from '~/components/devextreme/TemplateND.vue';
+import { confirm } from 'devextreme/ui/dialog';
+import { ThongBao, TypeToast } from '~/components/enums/ThongBao';
+
+const { showToast } = useToast();
 const grid = ref("nguoidung");
 const user = useCookie('user');
 const gridRef = useState('gridRef-' + grid.value);
-const showPopup = ref(false);
-const popupData = ref({});
 const childRef = ref();
+
 const dataSource = DataSource("HeThong/HT_NGUOIDUNG", ['ID'], ["ID", "TEN_DANG_NHAP", "TEN_DAY_DU", "EMAIL", "DIEN_THOAI", "MO_TA", "DVQL_ID", "DVSD_ID", "TRANG_THAI", "NGAY_TAO", "TFA", "CANBO_ID"], ["NGAY_TAO DESC"]);
 const Columns = [
     { df: "TEN_DANG_NHAP", c: "Tên đăng nhập", rq: true, w: 150 },
@@ -36,40 +38,19 @@ const Columns = [
     { df: "DIEN_THOAI", c: "Điện thoại" },
     {
         df: "RID", c: "Nhóm quyền", w: 150, rq: true, ops: {
-            cellTemplate: TemplateND({
-                chucnang: dsChucNang.nhomquyen, doituongloai: dsDoiTuong.DM_DANHMUC, td: 'Nhóm quyền', icon: false,
-                popupmode: childRef.value,
-                onClick: (cellInfo) => {
-                    var m = user.value.TEN_DANG_NHAP != cellInfo.data.TEN_DANG_NHAP || AccessRights.VAI_TRO == varVaiTro.quantrihethong;
-                    popupData.value = {
-                        nguoidungid: cellInfo.key,
-                        doituongid: '',
-                        chucnang: dsChucNang.nhomquyen,
-                        doituongloai: dsDoiTuong.DM_DANHMUC,
-                        multiple: true,
-                        require: false,
-                        icon: false,
-                        mode: m ? '' : 'view',
-                        td: 'Nhóm quyền',
-                        callback: function (e) {
-                            const instance = gridRef.value?.instance
-                            instance.refresh();
-                        }
+            cellTemplate: async (container, cellInfo) => {
+                // if (childRef.value.editMode === "") {
+                var m = user.value.TEN_DANG_NHAP != cellInfo.data.TEN_DANG_NHAP || AccessRights.VAI_TRO == varVaiTro.quantrihethong;
+                const app = createApp(TemplateND, {
+                    nguoidungid: cellInfo.key, doituongid: '', chucnang: dsChucNang.nhomquyen, doituongloai: dsDoiTuong.DM_DANHMUC, multiple: true, required: false, icon: false, mode: m ? '' : 'view', td: 'Nhóm quyền',
+                    callback: function (e) {
+                        const instance = gridRef.value?.instance
+                        instance.refresh();
                     }
-                    showPopup.value = true;
-                }
-
-            }),
-            // async (container, cellInfo) => {
-            //     var m = user.value.TEN_DANG_NHAP != cellInfo.data.TEN_DANG_NHAP || AccessRights.VAI_TRO == varVaiTro.quantrihethong;
-            //     // const app = createApp(TemplateND, {
-            //     //     nguoidungid: cellInfo.key, doituongid: '', chucnang: dsChucNang.nhomquyen, doituongloai: dsDoiTuong.DM_DANHMUC, multiple: true, required: false, icon: false, mode: m ? '' : 'view', td: 'Nhóm quyền',
-            //     //     callback: function (e) {
-            //     //         const instance = gridRef.value?.instance
-            //     //         instance.refresh();
-            //     //     }
-            //     // });
-            //     // app.mount(container);
+                });
+                app.mount(container);
+                // }
+            },
             editCellTemplate: (container, cellInfo) => {
                 var m = user.value.TEN_DANG_NHAP != cellInfo.data.TEN_DANG_NHAP || AccessRights.VAI_TRO == varVaiTro.quantrihethong;
                 const app = createApp(EditTemplateNDS, {
@@ -92,26 +73,18 @@ const Columns = [
     },
     {
         df: "COCAUTC", c: "Đơn vị", w: 150, af: false, as: false, ops: {
-            cellTemplate: TemplateND({
-                chucnang: dsChucNang.donvi, doituongloai: dsDoiTuong.DM_DANHMUC, multiple: true, required: true, icon: false,
-                popupmode: childRef,
-                onClick: (cellInfo) => {
-                    popupData.value = {
-                        nguoidungid: cellInfo.key,
-                        doituongid: '',
-                        chucnang: dsChucNang.donvi,
-                        doituongloai: dsDoiTuong.DM_DANHMUC,
-                        multiple: true,
-                        require: true,
-                        icon: false,
-                        callback: function (e) {
-                            const instance = gridRef.value?.instance
-                            instance.refresh();
-                        }
+            cellTemplate: async (container, cellInfo) => {
+                // if (childRef.value.editMode === "") {
+                const app = createApp(TemplateND, {
+                    nguoidungid: cellInfo.key, doituongid: '', chucnang: dsChucNang.donvi, doituongloai: dsDoiTuong.DM_DANHMUC, multiple: true, required: true, icon: false,
+                    callback: function (e) {
+                        const instance = gridRef.value?.instance
+                        instance.refresh();
                     }
-                    showPopup.value = true;
-                }
-            }),
+                });
+                app.mount(container);
+                // }
+            },
             editCellTemplate: (container, cellInfo) => {
                 if (cellInfo.cellElement == null) {
                     const app = createApp(EditTemplateND, {
@@ -137,7 +110,6 @@ const Columns = [
 ]
 const isReady = ref(false);
 const toolbarItem = ref([]);
-
 const { addToolbarButton } = useToolbarButton(toolbarItem);
 const AccessRights = reactive({
     New: false,
@@ -165,7 +137,7 @@ onBeforeMount(async () => {
         addToolbarButton({
             text: "Khóa", icon: "clear", type: "danger",
             onClick: () => {
-                alert("Đã khóa");
+                PostTrangThai(1)
             }
         })
     }
@@ -173,7 +145,7 @@ onBeforeMount(async () => {
         addToolbarButton({
             text: "Mở khóa", icon: "check", type: "default",
             onClick: () => {
-                alert("Đã mở khóa");
+                PostTrangThai(2)
             }
         })
     }
@@ -186,7 +158,6 @@ watch(isReady, (ready) => {
             const instance = gridRef.value?.instance
             if (instance) {
                 instance.option('onInitNewRow', (e) => {
-                    childRef.value = true;
                     e.data.TRANG_THAI = 2;
                     e.data.TFA = false;
                     e.data.DVQL_ID = user.value.DVQL_ID;
@@ -208,13 +179,35 @@ watch(isReady, (ready) => {
                 });
                 instance.option('editing.popup.width', function () { return window.innerWidth > 1000 ? 1000 : window.innerWidth * 0.9; })
             } else {
-                console.warn('⚠️ Grid instance vẫn chưa có sau isReady')
+                console.warn('Grid instance vẫn chưa có sau isReady')
             }
         })
 
     }
-})
-const closePopup = () => {
-    showPopup.value = false;
+});
+
+//update trang thái
+const PostTrangThai = async (trangthai) => {
+    const instance = gridRef.value?.instance
+    const itemsSelected = instance.getSelectedRowsData();
+    if (itemsSelected.length) {
+        const actionText = trangthai === 2 ? 'Mở khóa' : 'Khóa';
+        const dialog = confirm(`Bạn có chắc chắn muốn ${actionText}?`, 'Xác nhận');
+        dialog.then(async (dialogResult) => {
+            if (dialogResult) {
+                await PostData('HeThong/HT_NGUOIDUNG/TrangThai', { trangthai, items: JSON.stringify(itemsSelected.map(item => item.ID)) }).then((response) => {
+                    showToast(ThongBao.CapNhatThanhCong, TypeToast.Success);
+                    instance.deselectAll();
+                    instance.refresh();
+                });
+
+            }
+        });
+
+    } else {
+
+    }
+
+
 }
 </script>

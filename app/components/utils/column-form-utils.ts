@@ -63,6 +63,7 @@ export const colMap: Record<string, any> = {
 
 import { h, render, createApp } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import TinymceEditor from "../lib/TinymceEditor.vue";
 
 export function buildFormItem(
   config: Record<string, any>
@@ -120,6 +121,21 @@ export function buildFormItem(
         "onUpdate:value": (val: any) => {
           data.component.option("formData")[config.df] = val;
         },
+      });
+      const app = createApp({ render: () => vnode });
+      app.component("font-awesome-icon", FontAwesomeIcon);
+      app.mount(container);
+    };
+  }
+  if (config.type === "tinymce") {
+    item.template = (data: any, container: HTMLElement) => {
+      const vnode = h(TinymceEditor, {
+        modelValue: data.component.option("formData")[config.df],
+        "onUpdate:modelValue": (val: any) => {
+          data.component.option("formData")[config.df] = val;
+        },
+        ops: config.tProps || {},
+        itemInfo: config,
       });
       const app = createApp({ render: () => vnode });
       app.component("font-awesome-icon", FontAwesomeIcon);

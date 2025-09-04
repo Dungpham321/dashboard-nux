@@ -10,10 +10,10 @@ import { ref, watch, onMounted } from 'vue';
 import { GetData } from '@/composables/GlobalService';
 import PopupND from './PopupND.vue';
 const props = defineProps({
-  nguoidungid: Number,
-  doituongid: String,
-  chucnang: Number,
-  doituongloai: String,
+  nguoidungid: [String, Number],
+  doituongid:  [String, Number],
+  chucnang:  [String, Number],
+  doituongloai:  [String, Number],
   multiple: Boolean,
   title: String,
   required: Boolean,
@@ -27,8 +27,6 @@ const keyElement = `dsnd-${props.chucnang}_${props.doituongloai}_${props.doituon
 const dsdm = ref('');
 const ds = ref([]);
 const showPopup = ref(false);
-const popupData = ref({});
-
 const loadData = async () => {
   const cacheKey = props.chucnang + props.doituongloai;
   const cached = props.exData?.[cacheKey]?.[props.nguoidungid];
@@ -53,7 +51,6 @@ const loadData = async () => {
       if (props.exData && dsdm.value) {
         props.exData[cacheKey] = props.exData[cacheKey] || {};
         props.exData[cacheKey][props.nguoidungid] = dsdm.value;
-
       }
     } else {
       dsdm.value = props.doituongid ? '<i class="fa fa-user"></i>' : '<i class="fa fa-list-alt"></i>';
@@ -66,12 +63,9 @@ const loadData = async () => {
 };
 
 // onMounted(loadData);
-watch(() => props.nguoidungid,() => {
-  
-    loadData();
-  },
-  { immediate: true }
-);
+onMounted(() => {
+  loadData();
+});
 
 function openBrowser() {
   showPopup.value = true;

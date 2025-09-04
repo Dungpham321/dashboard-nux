@@ -4,40 +4,26 @@
             {{ props.Title }}
         </div>
         <div class='flex-grow overflow-auto'>
-            <DxDataGrid 
-                ref="gridRef"
-                :key="gridKey"
-                :data-source="dataSource" 
-                :show-borders="true" 
-                :column-auto-width="true"
-                :allow-column-reordering="true" 
-                :show-column-lines="true" 
-                :show-row-lines="true"
-                :row-alternation-enabled="false" 
-                 width="100%" height="100%" 
-                :remote-operations="true"
-                :focused-row-enabled="false" 
-                :sync-lookup-filter-values="false" 
-                :word-wrap-enabled="true"
-                :two-way-binding-enabled="true" 
-                :repaint-changes-only="true" 
-                :allow-column-resizing="true"
-                @exporting="onExporting" 
-                @toolbar-preparing="onToolbarPreparing" 
-                @selection-changed="selectedChanged"
-                @row-updated="onRowUpdated"
-                @row-inserted="onRowInsert" 
-                @init-new-row="onInitNewRow"
-                @editing-start="onEditingStart"
-                @edit-canceled="onCancel"
-                >
+            <DxTreeList ref="gridRef" :key="gridKey" :key-expr="'ID'" :parent-id-expr="'PID'" :root-value="0"
+                :has-items-expr="'HASCHILD'" :data-source="dataSource" :show-borders="true" :column-auto-width="true"
+                :allow-column-reordering="true" :show-column-lines="true" :show-row-lines="true"
+                :row-alternation-enabled="false" width="100%" height="100%" :remote-operations="{
+                    filtering: true,
+                    sorting: false,
+                    paging: false
+                }" :focused-row-enabled="false" :sync-lookup-filter-values="false" :word-wrap-enabled="true"
+                :two-way-binding-enabled="true" :repaint-changes-only="true" :allow-column-resizing="true"
+                @exporting="onExporting" @toolbar-preparing="onToolbarPreparing" @selection-changed="selectedChanged"
+                @row-updated="onRowUpdated" @row-inserted="onRowInsert" @init-new-row="onInitNewRow"
+                @editing-start="onEditingStart" @edit-canceled="onCancel">
                 <!-- Cột động -->
                 <template v-for="(col, index) in formColumns" :key="col.df || index">
                     <DxColumn v-bind="col" />
                 </template>
                 <!-- Paging -->
-                <DxPaging :enabled="true" :page-size="20"/>
-                <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="allowedPageSizes" :display-mode="'compact'"/>
+                <DxPaging :enabled="true" :page-size="20" />
+                <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="allowedPageSizes"
+                    :display-mode="'compact'" />
                 <!-- Selection -->
                 <DxSelection :mode="selectionMode" select-all-mode="allPages" show-check-boxes-mode="onClick" />
                 <!-- Search -->
@@ -51,11 +37,10 @@
                         </template>
                     </DxForm>
                 </DxEditing>
-                <!-- Export -->
-                <DxExport :enabled="true" :formats="exportFormats" :allow-export-selected-data="true" />
+
                 <!-- Load Panel -->
                 <DxLoadPanel :enabled="true" />
-            </DxDataGrid>
+            </DxTreeList>
         </div>
     </div>
 </template>
@@ -66,7 +51,8 @@ const selectedRowIndex = ref(-1);
 const editMode = ref("");
 import { useGridState } from '@/composables/useGridState';
 import {
-    DxDataGrid,
+    DxTreeList,
+    DxColumn,
     DxPaging,
     DxPager,
     DxSelection,
@@ -74,10 +60,9 @@ import {
     DxEditing,
     DxPopup,
     DxForm,
-    DxExport,
-    DxLoadPanel,
-    DxColumn
-} from 'devextreme-vue/data-grid'
+    DxLoadPanel
+} from 'devextreme-vue/tree-list';
+
 import { confirm } from 'devextreme/ui/dialog';
 import { buildColumn } from '@/components/utils/column-utils'
 import { useToast } from '@/composables/GlobalService'
@@ -141,9 +126,9 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
-    gridKey:{
+    gridKey: {
         type: String,
-        default:"grid"
+        default: "grid"
     }
 });
 const { gridRef, gridKey } = useGridState(props.gridKey);
@@ -161,8 +146,8 @@ function onRowUpdated(e) {
     if (e.component.option('editing.mode') === 'popup') {
         showToast(ThongBao.Sua, TypeToast.Success);
     }
-     e.component.refresh();
-   
+    e.component.refresh();
+
 }
 function onRowInsert(e) {
     if (e.component.option('editing.mode') === 'popup') {
@@ -226,7 +211,7 @@ function updateToolbarItems(updates) {
         }
     });
 }
-function onCancel(e){
+function onCancel(e) {
     editMode.value = "";
 }
 const toolbarItem = [
@@ -348,9 +333,9 @@ const toolbarItem = [
     },
 ]
 const formColumns = computed(() =>
-  props.cols.map(col => buildColumn(col, col.ops ?? {}))
+    props.cols.map(col => buildColumn(col, col.ops ?? {}))
 );
 defineExpose({
-  editMode
+    editMode
 })
 </script>

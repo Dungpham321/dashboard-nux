@@ -1,18 +1,17 @@
 <template>
   <aside :class="[
-    'fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-99999 border-r border-gray-200',
+    'fixed top-0 left-0 h-screen px-5 mt-16 lg:mt-0 flex flex-col bg-white dark:bg-gray-900 text-gray-900 border-r z-9999 transition-all duration-300 ease-in-out',
+    'dark:border-gray-800 border-gray-200',
     {
       'lg:w-[290px]': isExpanded || isMobileOpen || isHovered,
       'lg:w-[90px]': !isExpanded && !isHovered,
       'translate-x-0 w-[290px]': isMobileOpen,
       '-translate-x-full': !isMobileOpen,
       'lg:translate-x-0': true,
-    },
+    }
   ]" @mouseenter="!isExpanded && (isHovered = true)" @mouseleave="isHovered = false">
-    <div :class="[
-      'py-8 flex',
-      !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-center',
-    ]">
+    <!-- Logo -->
+    <div :class="['py-8 flex', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-center']">
       <router-link to="/">
         <img v-if="isExpanded || isHovered || isMobileOpen" class="dark:hidden" src="/images/logo/logo.svg" alt="Logo"
           width="150" height="40" />
@@ -21,88 +20,100 @@
         <img v-else src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
       </router-link>
     </div>
-    <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+
+    <!-- Menu -->
+    <div class="flex flex-col overflow-y-auto no-scrollbar duration-300 ease-linear">
       <nav class="mb-6">
-        <div class="flex flex-col gap-4">
-          <!-- <div v-for="(menuGroup, groupIndex) in menuGroups" :key="groupIndex"> -->
-          <!-- <h2
-            :class="['mb-4 text-xs uppercase flex leading-[20px] text-gray-400', !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start',]">
-            <template v-if="isExpanded || isHovered || isMobileOpen">
-              Menu quản trị
-            </template>
-<HorizontalDots v-else />
-</h2> -->
-          <ul class="flex flex-col gap-4">
-            <li v-for="(item, index) in menuGroups" :key="item.NAME">
-              <button v-if="item.Nodes" @click="toggleSubmenu(0, index)" :class="[
-                'menu-item group w-full',
-                {
-                  'menu-item-active': isSubmenuOpen(0, index),
-                  'menu-item-inactive': !isSubmenuOpen(0, index),
-                },
-                !isExpanded && !isHovered
-                  ? 'lg:justify-center'
-                  : 'lg:justify-start',
-              ]">
-                <span :class="[
-                  isSubmenuOpen(0, index)
-                    ? 'menu-item-icon-active'
-                    : 'menu-item-icon-inactive',
-                ]">
-                  <DynamicIcon :name="item.ICON" prefix="fas" />
-                </span>
-                <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.NAME }}</span>
-                <ChevronDownIcon v-if="isExpanded || isHovered || isMobileOpen" :class="[
-                  'ml-auto w-5 h-5 transition-transform duration-200',
-                  {
-                    'rotate-180 text-brand-500': isSubmenuOpen(
-                      0,
-                      index
-                    ),
-                  },
-                ]" />
-              </button>
-              <router-link v-else-if="item.HREF" :to="'/'+item.HREF" :class="[
-                'menu-item group',
-                {
-                  'menu-item-active': isActive(item.HREF),
-                  'menu-item-inactive': !isActive(item.HREF),
-                },
-              ]">
-                <span :class="[
-                  isActive(item.HREF)
-                    ? 'menu-item-icon-active'
-                    : 'menu-item-icon-inactive',
-                ]">
-                  <DynamicIcon :name="item.ICON" prefix="fas" />
-                </span>
-                <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.NAME }}</span>
-              </router-link>
-              <transition @enter="startTransition" @after-enter="endTransition" @before-leave="startTransition"
-                @after-leave="endTransition">
-                <div v-show="isSubmenuOpen(0, index) &&
-                  (isExpanded || isHovered || isMobileOpen)
-                  ">
-                  <ul class="mt-2 space-y-1 ml-9">
-                    <li v-for="subItem in item.Nodes" :key="subItem.NAME">
-                      <router-link v-if="subItem.HREF" :to="'/'+subItem.HREF" :class="[
-                        'menu-dropdown-item',
+        <ul class="flex flex-col gap-4">
+          <li v-for="(item, index) in menuGroups" :key="item.NAME">
+            <!-- Cấp 1 -->
+            <button v-if="item.Nodes && item.Nodes.length > 0" @click="toggleSubmenu(0, index)" :class="[
+              'menu-item group w-full',
+              {
+                'menu-item-active': isSubmenuOpen(0, index),
+                'menu-item-inactive': !isSubmenuOpen(0, index),
+              },
+              !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start',
+            ]">
+              <span :class="isSubmenuOpen(0, index) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">
+                <DynamicIcon :name="item.ICON" prefix="fas" />
+              </span>
+              <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.NAME }}</span>
+              <ChevronDownIcon v-if="isExpanded || isHovered || isMobileOpen" :class="[
+                'ml-auto w-5 h-5 transition-transform duration-200',
+                { 'rotate-180 text-brand-500': isSubmenuOpen(0, index) },
+              ]" />
+            </button>
+
+            <router-link v-else-if="item.HREF" :to="'/' + item.HREF" :class="[
+              'menu-item group',
+              {
+                'menu-item-active': isActive(item.HREF),
+                'menu-item-inactive': !isActive(item.HREF),
+              },
+            ]">
+              <span :class="isActive(item.HREF) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'">
+                <DynamicIcon :name="item.ICON" prefix="fas" />
+              </span>
+              <span v-if="isExpanded || isHovered || isMobileOpen" class="menu-item-text">{{ item.NAME }}</span>
+            </router-link>
+
+            <!-- Cấp 2 + Cấp 3 -->
+            <transition @enter="startTransition" @after-enter="endTransition" @before-leave="startTransition"
+              @after-leave="endTransition">
+              <div v-show="isSubmenuOpen(0, index) && (isExpanded || isHovered || isMobileOpen)">
+                <ul class="mt-2 space-y-1 ml-9">
+                  <li v-for="(subItem, subIndex) in item.Nodes" :key="subItem.NAME">
+                    <!-- Nếu có cấp 3 -->
+                    <div v-if="subItem.Nodes && subItem.Nodes.length > 0">
+                      <button @click="toggleSubmenu(1, subItem.NAME)" :class="[
+                        'menu-dropdown-item group w-full',
                         {
-                          'menu-dropdown-item-active': isActive(subItem.HREF),
-                          'menu-dropdown-item-inactive': !isActive(subItem.HREF),
-                        },
+                          'menu-dropdown-item-active': isSubmenuOpen(1, subItem.NAME),
+                          'menu-dropdown-item-inactive': !isSubmenuOpen(1, subItem.NAME),
+                        }
                       ]">
-                        <!-- <DynamicIcon :name="item.ICON" prefix="fas" /> -->
                         {{ subItem.NAME }}
-                      </router-link>
-                    </li>
-                  </ul>
-                </div>
-              </transition>
-            </li>
-          </ul>
-        </div>
-        <!-- </div> -->
+                        <ChevronDownIcon :class="[
+                          'ml-auto w-4 h-4 transition-transform duration-200',
+                          { 'rotate-180 text-brand-500': isSubmenuOpen(1, subItem.NAME) }
+                        ]" />
+                      </button>
+
+                      <transition>
+                        <div v-show="isSubmenuOpen(1, subItem.NAME)">
+                          <ul class="mt-2 space-y-1 ml-6">
+                            <li v-for="subSubItem in subItem.Nodes" :key="subSubItem.NAME">
+                              <router-link v-if="subSubItem.HREF" :to="'/' + subSubItem.HREF" :class="[
+                                'menu-dropdown-item',
+                                {
+                                  'menu-dropdown-item-active': isActive(subSubItem.HREF),
+                                  'menu-dropdown-item-inactive': !isActive(subSubItem.HREF),
+                                }
+                              ]">
+                                {{ subSubItem.NAME }}
+                              </router-link>
+                            </li>
+                          </ul>
+                        </div>
+                      </transition>
+                    </div>
+                    <!-- Nếu không có cấp 3 -->
+                    <router-link v-else-if="subItem.HREF" :to="'/' + subItem.HREF" :class="[
+                      'menu-dropdown-item',
+                      {
+                        'menu-dropdown-item-active': isActive(subItem.HREF),
+                        'menu-dropdown-item-inactive': !isActive(subItem.HREF),
+                      }
+                    ]">
+                      {{ subItem.NAME }}
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </transition>
+          </li>
+        </ul>
       </nav>
     </div>
   </aside>
@@ -136,6 +147,11 @@ onMounted(async () => {
   const response = await GetData("Dashboard/MenuAdmin", {});
   menuGroups.value = response.Data.items;
 });
+const submenuState = reactive({
+  0: {}, // cấp 1
+  1: {}  // cấp 2
+})
+
 // const menuGroups = [
 //   {
 //     title: "Menu",
@@ -215,25 +231,34 @@ onMounted(async () => {
 // ];
 const isActive = (path) => route.path === path;
 
-const toggleSubmenu = (groupIndex, itemIndex) => {
-  const key = `${groupIndex}-${itemIndex}`;
-  openSubmenu.value = openSubmenu.value === key ? null : key;
-};
+// const toggleSubmenu = (groupIndex, itemIndex) => {
+//   const key = `${groupIndex}-${itemIndex}`;
+//   openSubmenu.value = openSubmenu.value === key ? null : key;
+// };
+function toggleSubmenu(level, key) {
+  submenuState[level][key] = !submenuState[level][key]
+}
+
 const isAnySubmenuRouteActive = computed(() => {
   return menuGroups.value.some((group) =>
     group.Nodes && group.Nodes.some((subItem) => isActive(subItem.HREF))
   );
 });
-const isSubmenuOpen = (groupIndex, itemIndex) => {
-  const key = `${groupIndex}-${itemIndex}`;
-  return (
-    openSubmenu.value === key ||
-    (isAnySubmenuRouteActive.value &&
-      menuGroups[groupIndex].items[itemIndex].Nodes?.some((subItem) =>
-        isActive(subItem.HREF)
-      ))
-  );
-};
+
+function isSubmenuOpen(level, key) {
+  return submenuState[level]?.[key] ?? false
+}
+
+// const isSubmenuOpen = (groupIndex, itemIndex) => {
+//   const key = `${groupIndex}-${itemIndex}`;
+//   return (
+//     openSubmenu.value === key ||
+//     (isAnySubmenuRouteActive.value &&
+//       menuGroups[groupIndex].items[itemIndex].Nodes?.some((subItem) =>
+//         isActive(subItem.HREF)
+//       ))
+//   );
+// };
 const startTransition = (el) => {
   el.style.height = "auto";
   const height = el.scrollHeight;
